@@ -130,7 +130,11 @@ argocd cluster add kind-argocd-cluster --name argocd-cluster --insecure --in-clu
 argocd cluster list
 ```
 
-## Step 5: Create Application in ArgoCD UI
+## Step 5: Create Application
+
+There are three different methods to deploy applications using ArgoCD
+
+#### A. UI Approach (NGINX Example) - Good for beginners and demos
 
 1. In ArgoCD UI, Go to **Applications** and click **New App**.
 2. Fill the fields:
@@ -146,6 +150,73 @@ argocd cluster list
 3. Leave Sync Policy as **Manual** for now.
 4. Click **Create**.
 
+
+#### B. CLI Approach (Apache Example) - Good for admins and operators
+
+Run this command to create an ArgoCD application:
+
+```bash
+argocd app create apache-app \
+  --repo https://github.com/<your-username>/argocd-demos.git \
+  --path cli_approach/apache \
+  --dest-server https://<your_added_cluster_url> \
+  --dest-namespace default \
+  --sync-policy automated \
+  --self-heal \
+  --auto-prune
+```
+
+* Replace `<your-username>` with your GitHub username.
+* Replace `<your_added_cluster_url>` with the cluster you registered (e.g., Run 'argocd cluster list' or `https://kubernetes.default.svc`).
+
+
+#### Explanation of Flags
+
+  - --repo → Git repo with your manifests.
+  - --path → Path in repo where manifests live (manifests/).
+  - --dest-server → Target cluster (inside ArgoCD, e.g: https://kubernetes.default.svc = in-cluster).
+  - --dest-namespace → Namespace to deploy (e.g., default).
+  - --sync-policy automated → Auto-sync enabled.
+  - --self-heal → Fix drift if someone changes/deletes resources manually.
+  - --auto-prune → Remove resources if they’re deleted from Git.
+
+
+#### C. Declarative Approach (Online Shop Example) - True GitOps → reproducible, auditable, production-ready
+
+Create **online_shop_app.yml**
+
+```yaml
+
+apiVersion: argoproj.io/v1alpha1   # API group for ArgoCD resources
+kind: Application                  # Resource type is "Application"
+metadata:
+  name: online-shop-app            # Name of this ArgoCD application
+  namespace: argocd                # Must be created in the 'argocd' namespace
+spec:
+  project: default                 # ArgoCD Project (logical grouping of apps)
+  source:
+    repoURL: https://github.com/<your-username>/argocd-demos.git   # Git repo containing manifests
+    targetRevision: main           # Git branch or tag (e.g., main, dev, release-1.0)
+    path: declarative_approach/online_shop   # Path inside repo where manifests live
+  destination:
+    server: <argocd_cluster_server_url>   # Target cluster API
+    namespace: default             # Namespace in which to deploy the app
+  syncPolicy:                      # Defines how ArgoCD syncs the app
+    automated:                     # Enable auto-sync
+      prune: true                  # Delete resources removed from Git
+      selfHeal: true               # Fix drift if resources are changed manually
+```
+
+Replace `<your-username>` with your GitHub username.
+
+Replace `<argocd_cluster_server_url>` with the server URL from `argocd cluster list`.
+
+---
+Apply **online_shop_app.yml**
+
+```bash
+kubectl apply -f online_shop_app.yml -n argocd
+```
 
 ## Step 6: Sync the Application
 
