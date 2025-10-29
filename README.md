@@ -95,7 +95,7 @@ argocd version --client
 ### 3. Login to ArgoCD CLI
 
 ```bash
-argocd login <instance_public_ip>:8080 --username admin --password <initial_password> --insecure
+argocd login localhost:8080 --username admin --password <initial_password> --insecure
 ```
 
 > Note: The --insecure flag is required when using port-forward with self-signed TLS certs.
@@ -126,7 +126,6 @@ argocd cluster add kind-argocd-cluster --name argocd-cluster --insecure --in-clu
 
 ```bash
 argocd cluster list
-kubectl get pods
 ```
 
 ## Step 5: Create Application in ArgoCD UI
@@ -181,7 +180,7 @@ kubectl port-forward svc/nginx-service 8081:80 --address=0.0.0.0 &
 3. Access the Nginx app at:
 
 ```bash
-http://<EC2-Public-IP>:8081
+http://localhost:8081
 ```
 
 
