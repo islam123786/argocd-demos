@@ -1,3 +1,5 @@
+# Steps to setup Argo-cd and install nginx using it in mac-os local setup with kind
+
 ## Step 1: Create Kind Cluster
 
 kind-config.yml
