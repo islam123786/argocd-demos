@@ -215,16 +215,9 @@ git push origin main
 ```bash
 kubectl get pods -n default
 ```
-
 You should see 5 NGINX pods running now.
 
-![nginx-pod-5-running](../output_images/image-9.png)
-
-In your ArgoCD, in `nginx-app` you can see that pods are created from 3 to 5:
-
-![nginx-app-5-pods](../output_images/image-10.png)
-
----
+In your ArgoCD, in `nginx-app` you can see that pods are created from 3 to 5.
 
 ## Destroy 
 
